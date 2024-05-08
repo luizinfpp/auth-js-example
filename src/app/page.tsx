@@ -1,3 +1,4 @@
+import { RegisterFormField } from "@/components/register";
 import { auth } from "./auth";
 import { SignIn } from "@/components/signIn";
 import SignOut from "@/components/signOut";
@@ -16,7 +17,7 @@ export default async function Home() {
   const session = await auth()
 
   return (
-    <main className="flex flex-col items-center justify-between p-24">
+    <main className="flex items-center justify-center p-24 gap-8">
       <Card>
         <CardHeader>
           <CardTitle>Data</CardTitle>
@@ -27,18 +28,29 @@ export default async function Home() {
       </Card>
       <Card>
         <CardHeader>
-          <CardTitle>Login</CardTitle>
+          <CardTitle>Register</CardTitle>
           <CardDescription>Insert your credentials</CardDescription>
         </CardHeader>
         <CardContent>
           <p>Card Content</p>
         </CardContent>
         <CardFooter>
+          <RegisterFormField />
+        </CardFooter>
+      </Card>
+      <Card>
+        <CardHeader>
+          <CardTitle>Login</CardTitle>
+          <CardDescription>Insert your credentials</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <p>Card Content</p>
+        </CardContent>
+        <CardFooter className="flex flex-col items-center justify-center gap-4">
           <SignIn />
           <SignOut />
         </CardFooter>
       </Card>
-            
     </main>
   );
 }
