@@ -1,4 +1,4 @@
-import { signOut } from "@/app/auth"
+import { signOut } from "@@/auth"
 import { Button } from "./ui/button"
  
 export default function SignOutPage() {

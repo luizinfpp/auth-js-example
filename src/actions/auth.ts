@@ -1,8 +1,8 @@
 "use server"
 
-import { signIn } from "@/app/auth"
+import { signIn } from "@@/auth"
 import bcrypt from "bcrypt"
-import { db } from "@/lib/db"
+import { db } from "@/src/lib/db"
 
 export const registerAction = async ({ email, password } : {email: string, password: string}) => {
   const hashed = await bcrypt.hash(password, 10)

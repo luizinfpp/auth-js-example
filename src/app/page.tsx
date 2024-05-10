@@ -1,5 +1,5 @@
 import { RegisterFormField } from "@/components/register";
-import { auth } from "./auth";
+import { auth } from "@@/auth";
 import { SignIn } from "@/components/signIn";
 import SignOut from "@/components/signOut";
 import {
