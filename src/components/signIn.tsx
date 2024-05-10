@@ -1,39 +1,31 @@
-"use client"
+'use client'
 
-import { signInAction } from "@/actions/auth"
+import { signInAction } from '@/actions/auth'
 
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { z } from "zod"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form"
- 
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { z } from 'zod'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useForm } from 'react-hook-form'
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
+
 const signInSchema = z.object({
-  email: z.string().email().min(1, "Email is required"),
+  email: z.string().email().min(1, 'Email is required'),
   password: z.string().min(1, 'Password is required'),
 })
- 
-export function SignIn() {
 
+export function SignIn() {
   const form = useForm<z.infer<typeof signInSchema>>({
     resolver: zodResolver(signInSchema),
     defaultValues: {
-      email: "",
-      password: "",
+      email: '',
+      password: '',
     },
   })
   function onSubmit(values: z.infer<typeof signInSchema>) {
-    const validatedData = signInSchema.safeParse(values)    
-    /**TODO: Set the form action */
+    // const validatedData = signInSchema.safeParse(values)
+
+    /** TODO: Set the form action */
     signInAction(values)
   }
 
@@ -67,11 +59,14 @@ export function SignIn() {
               </FormItem>
             )}
           />
-          <Button type="submit" variant="outline">Signin</Button>
+          <Button type="submit" variant="outline">
+            Signin
+          </Button>
         </div>
-        <Button type="submit" variant="outline">Signin with Google</Button>
+        <Button type="submit" variant="outline">
+          Signin with Google
+        </Button>
       </form>
     </Form>
-    
   )
-} 
+}

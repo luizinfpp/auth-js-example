@@ -1,16 +1,20 @@
-import { signOut } from "@@/auth"
-import { Button } from "./ui/button"
- 
+import { signOut } from '@@/auth'
+import { Button } from './ui/button'
+
 export default function SignOutPage() {
   return (
     <div>
       <form
-        action={async (formData) => {
-          "use server"
-          await signOut()
-        }}
+        action={
+          async (/* formData */) => {
+            'use server'
+            await signOut()
+          }
+        }
       >
-        <Button type="submit" variant="outline">Sign out</Button>
+        <Button type="submit" variant="outline">
+          Sign out
+        </Button>
       </form>
     </div>
   )

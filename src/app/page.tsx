@@ -1,19 +1,10 @@
-import { RegisterFormField } from "@/components/register";
-import { auth } from "@@/auth";
-import { SignIn } from "@/components/signIn";
-import SignOut from "@/components/signOut";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
-
+import { RegisterFormField } from '@/components/register'
+import { auth } from '@@/auth'
+import { SignIn } from '@/components/signIn'
+import SignOut from '@/components/signOut'
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 
 export default async function Home() {
-
   const session = await auth()
 
   return (
@@ -22,9 +13,7 @@ export default async function Home() {
         <CardHeader>
           <CardTitle>Data</CardTitle>
         </CardHeader>
-        <CardContent>
-          {JSON.stringify(session)}
-        </CardContent>
+        <CardContent>{JSON.stringify(session)}</CardContent>
       </Card>
       <Card>
         <CardHeader>
@@ -52,5 +41,5 @@ export default async function Home() {
         </CardFooter>
       </Card>
     </main>
-  );
+  )
 }
