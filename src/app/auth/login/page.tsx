@@ -1,5 +1,4 @@
 import { SignIn } from '@/components/signIn'
-import SignOut from '@/components/signOut'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 
 export default async function Home() {
@@ -15,7 +14,6 @@ export default async function Home() {
         </CardContent>
         <CardFooter className="flex flex-col items-center justify-center gap-4">
           <SignIn />
-          <SignOut />
         </CardFooter>
       </Card>
     </div>

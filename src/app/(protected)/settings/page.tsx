@@ -1,5 +1,6 @@
 import { auth } from '@@/auth'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
+import SignOut from '@/components/signOut'
 
 const ProtectedPage = async () => {
   const session = await auth()
@@ -12,6 +13,13 @@ const ProtectedPage = async () => {
           <CardTitle>Data</CardTitle>
         </CardHeader>
         <CardContent>{JSON.stringify(session)}</CardContent>
+      </Card>
+      <Card>
+        <CardHeader></CardHeader>
+        <CardContent></CardContent>
+        <CardFooter className="flex flex-col items-center justify-center gap-4">
+          <SignOut />
+        </CardFooter>
       </Card>
     </div>
   )
