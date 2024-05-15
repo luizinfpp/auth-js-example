@@ -9,5 +9,15 @@ const prisma = new PrismaClient()
 export const { handlers, signIn, signOut, auth } = NextAuth({
   adapter: PrismaAdapter(prisma),
   session: { strategy: 'jwt' },
+  callbacks: {
+    async session({ token, session }) {
+      if (session.user) session.user.customField = token.customField
+      return session
+    },
+    async jwt({ token }) {
+      token.customField = 'test'
+      return token
+    },
+  },
   ...authConfig,
 })
