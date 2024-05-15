@@ -9,23 +9,18 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 
-const signInSchema = z.object({
-  email: z.string().email().min(1, 'Email is required'),
-  password: z.string().min(1, 'Password is required'),
-})
+import { loginSchema } from '@/schemas/login'
 
 export function SignIn() {
-  const form = useForm<z.infer<typeof signInSchema>>({
-    resolver: zodResolver(signInSchema),
+  const form = useForm<z.infer<typeof loginSchema>>({
+    resolver: zodResolver(loginSchema),
     defaultValues: {
       email: '',
       password: '',
     },
   })
-  function onSubmit(values: z.infer<typeof signInSchema>) {
-    // const validatedData = signInSchema.safeParse(values)
-
-    /** TODO: Set the form action */
+  function onSubmit(values: z.infer<typeof loginSchema>) {
+    const validatedData = signInSchema.safeParse(values)
     signInAction(values)
   }
 

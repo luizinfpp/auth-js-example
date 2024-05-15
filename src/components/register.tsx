@@ -12,23 +12,20 @@ import FormErrorComponent from './formError'
 import { useState } from 'react'
 import FormSuccessComponent from './formSuccess'
 
-const signInSchema = z.object({
-  email: z.string().email().min(1, 'Email is required'),
-  password: z.string().min(1, 'Password is required'),
-})
+import { loginSchema } from '@/schemas/login'
 
 export function RegisterFormField() {
   const [errorMessage, setErrorMessage] = useState<string | undefined>()
   const [successMessage, setSuccessMessage] = useState<string | undefined>()
 
-  const form = useForm<z.infer<typeof signInSchema>>({
-    resolver: zodResolver(signInSchema),
+  const form = useForm<z.infer<typeof loginSchema>>({
+    resolver: zodResolver(loginSchema),
     defaultValues: {
       email: '',
       password: '',
     },
   })
-  async function onSubmit(values: z.infer<typeof signInSchema>) {
+  async function onSubmit(values: z.infer<typeof loginSchema>) {
     setErrorMessage(undefined)
     setSuccessMessage(undefined)
 
