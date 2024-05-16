@@ -20,8 +20,8 @@ export function SignIn() {
     },
   })
   function onSubmit(values: z.infer<typeof loginSchema>) {
-    const validatedData = signInSchema.safeParse(values)
-    signInAction(values)
+    const validatedData = loginSchema.safeParse(values)
+    if (validatedData.success) signInAction(validatedData.data)
   }
 
   return (

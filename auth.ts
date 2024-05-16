@@ -11,11 +11,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   session: { strategy: 'jwt' },
   callbacks: {
     async session({ token, session }) {
-      if (session.user) session.user.customField = token.customField
+      if (token.sub && session.user) session.user.id = token.sub
       return session
     },
     async jwt({ token }) {
-      token.customField = 'test'
       return token
     },
   },

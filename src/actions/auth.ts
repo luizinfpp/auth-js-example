@@ -1,8 +1,8 @@
 'use server'
 
 import { signIn } from '@@/auth'
-import bcrypt from 'bcrypt'
-import { db } from '@/lib/db'
+import bcrypt from 'bcryptjs'
+import db from '@/lib/db'
 import { DEFAULT_REDIRECT_PATH } from '@@/routes'
 import { AuthError } from 'next-auth'
 
