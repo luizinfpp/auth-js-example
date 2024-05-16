@@ -1,7 +1,7 @@
 'use client'
 
 import { signInAction } from '@/actions/auth'
-
+import { signIn } from 'next-auth/react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { z } from 'zod'
@@ -10,6 +10,7 @@ import { useForm } from 'react-hook-form'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 
 import { loginSchema } from '@/schemas/login'
+import { DEFAULT_REDIRECT_PATH } from '@@/routes'
 
 export function SignIn() {
   const form = useForm<z.infer<typeof loginSchema>>({
@@ -19,9 +20,17 @@ export function SignIn() {
       password: '',
     },
   })
+
   function onSubmit(values: z.infer<typeof loginSchema>) {
     const validatedData = loginSchema.safeParse(values)
     if (validatedData.success) signInAction(validatedData.data)
+  }
+
+  // using client login
+  function onClickGoogle() {
+    signIn('google', {
+      callbackUrl: DEFAULT_REDIRECT_PATH,
+    })
   }
 
   return (
@@ -58,7 +67,7 @@ export function SignIn() {
             Signin
           </Button>
         </div>
-        <Button type="submit" variant="outline">
+        <Button type="submit" variant="outline" onClick={onClickGoogle}>
           Signin with Google
         </Button>
       </form>

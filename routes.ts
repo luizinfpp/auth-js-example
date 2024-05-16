@@ -1,7 +1,7 @@
 export const publicRoutes = ['/']
 
 // Used for auth
-export const authRoutes = ['/auth/login', '/auth/register']
+export const authRoutes = ['/auth/login', '/auth/register', 'auth/error']
 
 // Used for api ath purposes
 export const apiAuthPrefix = '/api/auth'

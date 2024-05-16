@@ -2,27 +2,18 @@
 
 import { signIn } from '@@/auth'
 import bcrypt from 'bcryptjs'
-import db from '@/lib/db'
 import { DEFAULT_REDIRECT_PATH } from '@@/routes'
 import { AuthError } from 'next-auth'
+import { createUser, getUserByEmail } from '@/data/user'
 
 export const registerAction = async ({ email, password }: { email: string; password: string }) => {
   const hashed = await bcrypt.hash(password, 10)
 
-  const existingUser = await db.user.findUnique({
-    where: {
-      email,
-    },
-  })
+  const existingUser = await getUserByEmail(email)
 
   if (existingUser) return { error: 'E-mail already in use.' }
 
-  await db.user.create({
-    data: {
-      email,
-      password: hashed,
-    },
-  })
+  await createUser(email, hashed)
 
   return { success: 'User successfully created!' }
 }
