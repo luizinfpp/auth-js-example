@@ -2,11 +2,50 @@
 
 import { signIn } from '@@/auth'
 import bcrypt from 'bcryptjs'
+import db from '@/lib/db'
 import { DEFAULT_REDIRECT_PATH } from '@@/routes'
 import { AuthError } from 'next-auth'
 import { createUser, getUserByEmail } from '@/data/user'
+import { generateVerificationToken } from '@/lib/tokens'
+import { loginSchema } from '@/schemas/login'
+import { sendVerificationEmail } from '@/lib/mail'
+import { getVerificationTokenByToken } from '@/data/verification-token'
 
-export const registerAction = async ({ email, password }: { email: string; password: string }) => {
+export const newVerification = async (token: string) => {
+  const existingToken = await getVerificationTokenByToken(token)
+  if (!existingToken) {
+    return { error: 'Token does not exist' }
+  }
+  const hasExpired = new Date(existingToken.expires) < new Date()
+  if (hasExpired) {
+    return { error: 'Token has expired' }
+  }
+  const existingUser = await getUserByEmail(existingToken.email)
+  if (!existingUser) {
+    return { error: 'Email does not exist' }
+  }
+  await db.user.update({
+    where: { id: existingUser.id },
+    data: {
+      emailVerified: new Date(),
+      email: existingToken.email,
+    },
+  })
+  await db.verificationToken.delete({
+    where: { id: existingToken.id },
+  })
+  return { success: 'Email verified' }
+}
+
+export const registerAction = async (values: { email: string; password: string }) => {
+  const validatedFields = loginSchema.safeParse(values)
+
+  if (!validatedFields.success) {
+    return { error: 'Invalid Fields!' }
+  }
+
+  const { email, password } = validatedFields.data
+
   const hashed = await bcrypt.hash(password, 10)
 
   const existingUser = await getUserByEmail(email)
@@ -15,10 +54,31 @@ export const registerAction = async ({ email, password }: { email: string; passw
 
   await createUser(email, hashed)
 
-  return { success: 'User successfully created!' }
+  const verificationToken = await generateVerificationToken(email)
+  await sendVerificationEmail(verificationToken.email, verificationToken.token)
+  return { success: 'Email Verification Sent!' }
 }
 
-export const signInAction = async ({ email, password }: { email: string; password: string }) => {
+export const signInAction = async (values: { email: string; password: string }) => {
+  const validatedFields = loginSchema.safeParse(values)
+
+  if (!validatedFields.success) {
+    return { error: 'Invalid Fields!' }
+  }
+
+  const { email, password } = validatedFields.data
+  const existingUser = await getUserByEmail(email)
+
+  if (!existingUser || !existingUser.email || !existingUser.password) {
+    return { error: 'E-mail does not exist' }
+  }
+
+  if (!existingUser.emailVerified) {
+    const verificationToken = await generateVerificationToken(existingUser.email)
+    await sendVerificationEmail(verificationToken.email, verificationToken.token)
+    return { success: 'Confirmation e-mail Sent!' }
+  }
+
   try {
     await signIn('credentials', { email, password, redirectTo: DEFAULT_REDIRECT_PATH })
   } catch (error) {

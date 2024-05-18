@@ -11,8 +11,19 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 
 import { loginSchema } from '@/schemas/login'
 import { DEFAULT_REDIRECT_PATH } from '@@/routes'
+import { useState } from 'react'
+import FormErrorComponent from './formError'
+import { useSearchParams } from 'next/navigation'
+import FormSuccessComponent from './formSuccess'
 
 export function SignIn() {
+  const [errorMessage, setErrorMessage] = useState<string | undefined>()
+  const [successMessage, setSuccessMessage] = useState<string | undefined>()
+
+  const searchParams = useSearchParams()
+  const urlError =
+    searchParams.get('error') === 'OAuthAccountNotLinked' ? 'E-mail already in use for different provider.' : ''
+
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -21,9 +32,17 @@ export function SignIn() {
     },
   })
 
-  function onSubmit(values: z.infer<typeof loginSchema>) {
+  async function onSubmit(values: z.infer<typeof loginSchema>) {
+    setErrorMessage(undefined)
+    setSuccessMessage(undefined)
+
     const validatedData = loginSchema.safeParse(values)
-    if (validatedData.success) signInAction(validatedData.data)
+    if (!validatedData.success) return
+
+    const data = await signInAction(validatedData.data)
+
+    if (data && data.error) setErrorMessage(data.error)
+    if (data && data.success) setSuccessMessage(data.success)
   }
 
   // using client login
@@ -63,6 +82,8 @@ export function SignIn() {
               </FormItem>
             )}
           />
+          <FormErrorComponent message={errorMessage || urlError} />
+          <FormSuccessComponent message={successMessage} />
           <Button type="submit" variant="outline">
             Signin
           </Button>

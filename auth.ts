@@ -24,15 +24,15 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     },
   },
   callbacks: {
-    // async signIn({ user }) {
-    //   if (!user.id) return false
-
-    //   const existingUser = await getUserById(user.id)
-
-    //   if (!existingUser || !existingUser.emailVerified) return false
-
-    //   return true
-    // },
+    async signIn({ user, account }) {
+      if (account?.provider !== 'credentials') {
+        return true
+      }
+      if (!user || !user?.id) return false
+      const existingUser = await getUserById(user?.id)
+      if (!existingUser?.emailVerified) return false
+      return true
+    },
     async session({ token, session }) {
       if (token.sub && session.user) session.user.id = token.sub
 
