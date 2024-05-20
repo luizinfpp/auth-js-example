@@ -11,14 +11,17 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 
 import { loginSchema } from '@/schemas/login'
 import { DEFAULT_REDIRECT_PATH } from '@@/routes'
-import { useState } from 'react'
+import { useState, useTransition } from 'react'
 import FormErrorComponent from './formError'
 import { useSearchParams } from 'next/navigation'
 import FormSuccessComponent from './formSuccess'
+import Link from 'next/link'
 
 export function SignIn() {
   const [errorMessage, setErrorMessage] = useState<string | undefined>()
   const [successMessage, setSuccessMessage] = useState<string | undefined>()
+
+  const [isPending, startTransition] = useTransition()
 
   const searchParams = useSearchParams()
   const urlError =
@@ -36,13 +39,14 @@ export function SignIn() {
     setErrorMessage(undefined)
     setSuccessMessage(undefined)
 
-    const validatedData = loginSchema.safeParse(values)
-    if (!validatedData.success) return
+    startTransition(() => {
+      signInAction(values).then((data) => {
+        if (!data) return
 
-    const data = await signInAction(validatedData.data)
-
-    if (data && data.error) setErrorMessage(data.error)
-    if (data && data.success) setSuccessMessage(data.success)
+        setErrorMessage(data.error)
+        setSuccessMessage(data.success)
+      })
+    })
   }
 
   // using client login
@@ -76,8 +80,11 @@ export function SignIn() {
               <FormItem>
                 <FormLabel>Password</FormLabel>
                 <FormControl>
-                  <Input {...field} />
+                  <Input disabled={isPending} {...field} placeholder="Your Password..." type="password" />
                 </FormControl>
+                <Button size={'sm'} variant={'link'} asChild className="px-0 font-normal text-indigo-600">
+                  <Link href={'/auth/reset'}>Forgot Password?</Link>
+                </Button>
                 <FormMessage />
               </FormItem>
             )}

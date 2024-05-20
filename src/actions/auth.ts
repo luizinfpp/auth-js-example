@@ -6,10 +6,11 @@ import db from '@/lib/db'
 import { DEFAULT_REDIRECT_PATH } from '@@/routes'
 import { AuthError } from 'next-auth'
 import { createUser, getUserByEmail } from '@/data/user'
-import { generateVerificationToken } from '@/lib/tokens'
-import { loginSchema } from '@/schemas/login'
-import { sendVerificationEmail } from '@/lib/mail'
+import { generatePasswordResetToken, generateVerificationToken } from '@/lib/tokens'
+import { loginSchema, resetSchema } from '@/schemas/login'
+import { sendPasswordResetEmail, sendVerificationEmail } from '@/lib/mail'
 import { getVerificationTokenByToken } from '@/data/verification-token'
+import { z } from 'zod'
 
 export const newVerification = async (token: string) => {
   const existingToken = await getVerificationTokenByToken(token)
@@ -95,4 +96,18 @@ export const signInAction = async (values: { email: string; password: string }) 
   }
 
   // await signIn('google')
+}
+
+export const reset = async (values: z.infer<typeof resetSchema>) => {
+  const validatedFields = resetSchema.safeParse(values)
+  if (!validatedFields.success) {
+    return { error: 'Invalid Email!' }
+  }
+  const existingUser = await getUserByEmail(validatedFields.data.email)
+  if (!existingUser) {
+    return { error: 'Email not found!' }
+  }
+  const passwordResetToken = await generatePasswordResetToken(validatedFields.data.email)
+  await sendPasswordResetEmail(passwordResetToken.email, passwordResetToken.token)
+  return { success: 'Sent reset email' }
 }
