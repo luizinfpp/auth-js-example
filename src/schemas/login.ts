@@ -10,3 +10,9 @@ export const resetSchema = z.object({
     message: 'Email is required',
   }),
 })
+
+export const newPasswordSchema = z.object({
+  password: z.string().min(8, {
+    message: 'Password length is at least 8 characters',
+  }),
+})

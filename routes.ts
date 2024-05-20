@@ -1,7 +1,7 @@
 export const publicRoutes = ['/', 'auth/new-verification']
 
 // Used for auth
-export const authRoutes = ['/auth/login', '/auth/register', 'auth/error', 'auth/reset']
+export const authRoutes = ['/auth/login', '/auth/register', 'auth/error', 'auth/reset', 'auth/new-password']
 
 // Used for api ath purposes
 export const apiAuthPrefix = '/api/auth'
