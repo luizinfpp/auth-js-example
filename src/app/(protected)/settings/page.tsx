@@ -1,9 +1,11 @@
-import { auth } from '@@/auth'
+'use client'
+
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import SignOut from '@/components/signOut'
+import { useCurrentUser } from '@/hooks/useCurrentUser'
 
-const ProtectedPage = async () => {
-  const session = await auth()
+const SettingsPage = async () => {
+  const user = useCurrentUser()
 
   return (
     <div className="flex flex-col m-32">
@@ -12,7 +14,7 @@ const ProtectedPage = async () => {
         <CardHeader>
           <CardTitle>Data</CardTitle>
         </CardHeader>
-        <CardContent>{JSON.stringify(session)}</CardContent>
+        <CardContent>{JSON.stringify(user)}</CardContent>
       </Card>
       <Card>
         <CardHeader></CardHeader>
@@ -25,4 +27,4 @@ const ProtectedPage = async () => {
   )
 }
 
-export default ProtectedPage
+export default SettingsPage
