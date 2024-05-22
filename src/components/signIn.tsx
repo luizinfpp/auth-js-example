@@ -23,6 +23,8 @@ export function SignIn() {
 
   const [isPending, startTransition] = useTransition()
 
+  const [showTwoFactor, setShowTwoFactor] = useState(false)
+
   const searchParams = useSearchParams()
   const urlError =
     searchParams.get('error') === 'OAuthAccountNotLinked' ? 'E-mail already in use for different provider.' : ''
@@ -40,12 +42,25 @@ export function SignIn() {
     setSuccessMessage(undefined)
 
     startTransition(() => {
-      signInAction(values).then((data) => {
-        if (!data) return
+      signInAction(values)
+        .then((data) => {
+          if (!data) return
 
-        setErrorMessage(data.error)
-        setSuccessMessage(data.success)
-      })
+          if (data.error) {
+            form.reset()
+            setErrorMessage(data.error)
+          }
+
+          if (data.success) {
+            form.reset()
+            setSuccessMessage(data.success)
+          }
+
+          if (data.twoFactor) {
+            setShowTwoFactor(true)
+          }
+        })
+        .catch(() => setErrorMessage('Something went wrong!'))
     })
   }
 
@@ -60,39 +75,58 @@ export function SignIn() {
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 flex flex-col">
         <div className="flex flex-col gap-2 w-72">
-          <FormField
-            control={form.control}
-            name="email"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>E-mail</FormLabel>
-                <FormControl>
-                  <Input {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="password"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Password</FormLabel>
-                <FormControl>
-                  <Input disabled={isPending} {...field} placeholder="Your Password..." type="password" />
-                </FormControl>
-                <Button size={'sm'} variant={'link'} asChild className="px-0 font-normal text-indigo-600">
-                  <Link href={'/auth/reset'}>Forgot Password?</Link>
-                </Button>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          {showTwoFactor && (
+            <FormField
+              control={form.control}
+              name="code"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Two Factor Code</FormLabel>
+                  <FormControl>
+                    <Input {...field} disabled={isPending} placeholder="123456" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          )}
+          {!showTwoFactor && (
+            <>
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>E-mail</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Password</FormLabel>
+                    <FormControl>
+                      <Input disabled={isPending} {...field} placeholder="Your Password..." type="password" />
+                    </FormControl>
+                    <Button size={'sm'} variant={'link'} asChild className="px-0 font-normal text-indigo-600">
+                      <Link href={'/auth/reset'}>Forgot Password?</Link>
+                    </Button>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </>
+          )}
           <FormErrorComponent message={errorMessage || urlError} />
           <FormSuccessComponent message={successMessage} />
           <Button type="submit" variant="outline">
-            Signin
+            {showTwoFactor ? 'Confirm' : 'Signin'}
           </Button>
         </div>
         <Button type="submit" variant="outline" onClick={onClickGoogle}>
